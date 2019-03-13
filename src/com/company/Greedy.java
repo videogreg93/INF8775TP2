@@ -9,7 +9,7 @@ import java.util.*;
 
 class Greedy {
 
-    private int totalCitys;
+    private int totalCities;
     private int totalQuantity;
 
     List<City> Calculate(List<City> cities) {
@@ -71,7 +71,7 @@ class Greedy {
     public List<City> readTextFile(String fileName) throws IOException {
         Path path = Paths.get(fileName);
         List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
-        totalCitys = Integer.parseInt(allLines.remove(0));
+        totalCities = Integer.parseInt(allLines.remove(0));
         totalQuantity = Integer.parseInt(allLines.remove(allLines.size() - 1));
         List<City> cities = new ArrayList<>();
         for (String line : allLines) {

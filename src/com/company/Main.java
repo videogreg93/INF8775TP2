@@ -11,12 +11,13 @@ public class Main {
     public static void main(String[] args) {
 
         // Print Best Solution
-        List<City> solution = getGreedy();
-        System.out.println(solution);
+//        List<City> solution = getGreedy();
+//        System.out.println(solution);
+        getProgDynam();
 
     }
 
-    public static List<City> getGreedy() {
+    private static List<City> getGreedy() {
         Greedy greedy = new Greedy();
         List<City> cities = new ArrayList<>();
         try {
@@ -38,6 +39,19 @@ public class Main {
             maxIndex = revenues[i] > revenues[maxIndex] ? i : maxIndex;
         }
         return allSolutions.get(maxIndex);
+    }
+
+    private static List<City> getProgDynam() {
+        ProgDynam progDynam = new ProgDynam();
+        List<City> cities = new ArrayList<>();
+        try {
+            progDynam.readTextFile(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return cities;
+        }
+        progDynam.calculate();
+        return cities;
     }
 
 
