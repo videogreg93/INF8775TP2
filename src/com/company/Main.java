@@ -11,8 +11,8 @@ public class Main {
     public static void main(String[] args) {
 
         // Print Best Solution
-        //List<City> solution = getGreedy();
-        //System.out.println(solution);
+        List<City> solution = getGreedy();
+        System.out.println(solution);
         //getProgDynam();
         List<City> solution2 = getHeuristic();
         System.out.println(solution2);
@@ -66,7 +66,6 @@ public class Main {
             return cities;
         }
         List<City> solution = getGreedy();
-        System.out.println(solution);
         while (true) {
             List<City> neighbors = heuristic.findNeighbors(cities, solution);
             if (neighbors.size() > 0) {
