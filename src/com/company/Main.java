@@ -6,14 +6,16 @@ import java.util.List;
 
 public class Main {
     static int iterations = 10;
-    static String filename = "./exemplaires/WC-100-10-03.txt";
+    static String filename = "./exemplaires/WC-100-100-03.txt";
 
     public static void main(String[] args) {
 
         // Print Best Solution
-//        List<City> solution = getGreedy();
-//        System.out.println(solution);
-        getProgDynam();
+        //List<City> solution = getGreedy();
+        //System.out.println(solution);
+        //getProgDynam();
+        List<City> solution2 = getHeuristic();
+        System.out.println(solution2);
 
     }
 
@@ -54,7 +56,28 @@ public class Main {
         return cities;
     }
 
-
-
+    private static List<City> getHeuristic() {
+        Heuristic heuristic = new Heuristic();
+        List<City> cities = new ArrayList<>();
+        try {
+            cities = heuristic.readTextFile(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return cities;
+        }
+        List<City> solution = getGreedy();
+        System.out.println(solution);
+        while (true) {
+            List<City> neighbors = heuristic.findNeighbors(cities, solution);
+            if (neighbors.size() > 0) {
+                City bestNeighbor = heuristic.findBestNeighbors(neighbors);
+                solution.remove(0);
+                solution.add(bestNeighbor);
+            } else {
+                break;
+            }
+        }
+        return solution;
+    }
 
 }
