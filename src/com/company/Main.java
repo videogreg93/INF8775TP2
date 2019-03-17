@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    static int iterations = 30;
+    static int iterations = 10;
     static int[] SIZES = new int[]{100, 1000, 10000};
     static int[] SERIES = new int[]{10, 100, 1000};
     static int EXAMPLES = 10;
