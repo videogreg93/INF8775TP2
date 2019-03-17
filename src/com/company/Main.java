@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Main {
     static int iterations = 10;
-    static String filename = "./exemplaires/WC-10000-1000-05.txt";
+    static String filename = "./exemplaires/WC-100-100-03.txt";
 
     public static void main(String[] args) {
 
