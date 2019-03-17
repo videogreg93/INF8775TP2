@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    static int iterations = 10;
+    static int iterations = 30;
     static int[] SIZES = new int[]{100, 1000, 10000};
     static int[] SERIES = new int[]{10, 100, 1000};
     static int EXAMPLES = 10;
@@ -23,7 +23,8 @@ public class Main {
         boolean showSolution = Boolean.parseBoolean(args[2]);
         boolean showExecutionTime = Boolean.parseBoolean(args[3]);
         launchAlgorithm(algorithm, filename, showSolution, showExecutionTime);
-
+        //generateCSVFile(ALGO.GREEDY);
+        //generateCSVFile(ALGO.HEURISTIC);
     }
 
     private static void launchAlgorithm(String algorithme, String filename, boolean showSolution, boolean showExecutionTime) {
@@ -144,9 +145,9 @@ public class Main {
                 for (int example = 1; example <= EXAMPLES; example++) {
                     long startTime = System.nanoTime();
                     String filename = "./exemplaires/WC-" + size + "-" + serie + "-" + String.format("%02d", example) + ".txt";
+                    averageRevenue += Greedy.getTotalRevenue(getGreedy(filename));
                     long endTime = System.nanoTime();
                     long timeElapsed = endTime - startTime;
-                    averageRevenue += Greedy.getTotalRevenue(getGreedy(filename));
                     averageExecutionTime += timeElapsed;
                 }
                 averageRevenue /= EXAMPLES;
@@ -171,9 +172,9 @@ public class Main {
                 for (int example = 1; example <= EXAMPLES; example++) {
                     long startTime = System.nanoTime();
                     String filename = "./exemplaires/WC-" + size + "-" + serie + "-" + String.format("%02d", example) + ".txt";
+                    averageRevenue += Greedy.getTotalRevenue(getHeuristic(filename));
                     long endTime = System.nanoTime();
                     long timeElapsed = endTime - startTime;
-                    averageRevenue += Greedy.getTotalRevenue(getHeuristic(filename));
                     averageExecutionTime += timeElapsed;
                 }
                 averageRevenue /= EXAMPLES;
