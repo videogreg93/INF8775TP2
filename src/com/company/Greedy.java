@@ -76,8 +76,7 @@ class Greedy {
         List<City> cities = new ArrayList<>();
         for (String line : allLines) {
             String[] parameters = line.split("\\s+");
-            cities.add(new City(Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2]), Integer.parseInt(parameters[3])));
-        }
+            cities.add(new City(Integer.parseInt(parameters[parameters.length-3]), Integer.parseInt(parameters[parameters.length-2]), Integer.parseInt(parameters[parameters.length-1])));        }
         return cities;
     }
 
