@@ -80,7 +80,7 @@ class Greedy {
         return cities;
     }
 
-    public int getTotalQuantity(List<City> cities) {
+    public static int getTotalQuantity(List<City> cities) {
         int total = 0;
         for (City city : cities) {
             total += city.quantity;
@@ -88,7 +88,7 @@ class Greedy {
         return total;
     }
 
-    public int getTotalRevenue(List<City> solution) {
+    public static int getTotalRevenue(List<City> solution) {
         int total = 0;
         for (City city : solution) {
             total += city.revenue;
