@@ -18,14 +18,36 @@ public class Main {
 //    static String filename = "./exemplaires/WC-100-100-03.txt";
 
     public static void main(String[] args) {
+        String algorithm = args[0];
+        String filename = args[1];
+        boolean showSolution = Boolean.parseBoolean(args[2]);
+        boolean showExecutionTime = Boolean.parseBoolean(args[3]);
+        launchAlgorithm(algorithm, filename, showSolution, showExecutionTime);
 
-        // Print Best Solution
-//        List<City> solution = getGreedy();
-//        System.out.println(solution);
-//        getProgDynam();
-//        List<City> solution2 = getHeuristic();
-//        System.out.println(solution2);
-        generateCSVFile(ALGO.HEURISTIC);
+    }
+
+    private static void launchAlgorithm(String algorithme, String filename, boolean showSolution, boolean showExecutionTime) {
+        List<City> solution = null;
+        long startTime = System.nanoTime();
+        switch (algorithme) {
+            case "glouton":
+                solution = getGreedy(filename);
+                break;
+            case "progdyn":
+                getProgDynam(filename); // TODO generate progDynam solution
+                break;
+            case "local":
+                solution = getHeuristic(filename);
+                break;
+        }
+        long endTime = System.nanoTime();
+        double totalTime = (endTime - startTime)/1000000.0;
+        int totalRevenue = Greedy.getTotalRevenue(solution);
+        System.out.println("Total Revenue: " + totalRevenue);
+        if (showSolution)
+            System.out.println("Solution: " + printSolution(solution));
+        if (showExecutionTime)
+            System.out.println("Execution Time: " + totalTime);
     }
 
     private static List<City> getGreedy(String filename) {
@@ -163,6 +185,15 @@ public class Main {
         }
 
         return lines;
+    }
+
+    private static String printSolution(List<City> solution) {
+        String string = "";
+        for (City city : solution) {
+            string += city.index;
+            string += " ";
+        }
+        return string;
     }
 
     enum ALGO {
