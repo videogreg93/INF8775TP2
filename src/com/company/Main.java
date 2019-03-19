@@ -18,13 +18,13 @@ public class Main {
 //    static String filename = "./exemplaires/WC-100-100-03.txt";
 
     public static void main(String[] args) {
-        String algorithm = args[0];
+        /*String algorithm = args[0];
         String filename = args[1];
         boolean showSolution = Boolean.parseBoolean(args[2]);
         boolean showExecutionTime = Boolean.parseBoolean(args[3]);
-        launchAlgorithm(algorithm, filename, showSolution, showExecutionTime);
+        launchAlgorithm(algorithm, filename, showSolution, showExecutionTime);*/
         //generateCSVFile(ALGO.GREEDY);
-        //generateCSVFile(ALGO.HEURISTIC);
+        generateCSVFile(ALGO.HEURISTIC);
     }
 
     private static void launchAlgorithm(String algorithme, String filename, boolean showSolution, boolean showExecutionTime) {
@@ -97,10 +97,24 @@ public class Main {
         }
         List<City> solution = getGreedy(filename);
         while (true) {
-            List<City> neighbors = heuristic.findNeighbors(cities, solution);
-            if (neighbors.size() > 0) {
-                City bestNeighbor = heuristic.findBestNeighbors(neighbors);
-                solution.remove(0);
+            boolean hasBetterSolution = false;
+            int bestIndex = 0;
+            int bestAddition = 0;
+            City bestNeighbor = new City(0,0,0);
+            for (int i = 0; i < solution.size(); i++) {
+                List<City> neighbors = heuristic.findNeighbors(cities, solution, i);
+                if (neighbors.size() > 0) {
+                    City bestNeighborTmp = heuristic.findBestNeighbors(neighbors);
+                    if (bestNeighborTmp.revenue - solution.get(i).revenue > bestAddition) {
+                        hasBetterSolution = true;
+                        bestAddition = bestNeighborTmp.revenue - solution.get(i).revenue;
+                        bestNeighbor = bestNeighborTmp;
+                        bestIndex = i;
+                    }
+                }
+            }
+            if(hasBetterSolution) {
+                solution.remove(bestIndex);
                 solution.add(bestNeighbor);
             } else {
                 break;
@@ -135,6 +149,7 @@ public class Main {
     }
 
     private static ArrayList<String> generateGreedyCSVFile() {
+        List<City> solution;
         ArrayList<String> lines = new ArrayList<>();
         lines.add("Size, Serie, Average Revenue, Average Execution Time");
         for (int size : SIZES) {
@@ -145,10 +160,11 @@ public class Main {
                 for (int example = 1; example <= EXAMPLES; example++) {
                     long startTime = System.nanoTime();
                     String filename = "./exemplaires/WC-" + size + "-" + serie + "-" + String.format("%02d", example) + ".txt";
-                    averageRevenue += Greedy.getTotalRevenue(getGreedy(filename));
+                    solution = getGreedy(filename);
                     long endTime = System.nanoTime();
                     long timeElapsed = endTime - startTime;
                     averageExecutionTime += timeElapsed;
+                    averageRevenue += Greedy.getTotalRevenue(solution);
                 }
                 averageRevenue /= EXAMPLES;
                 averageExecutionTime /= EXAMPLES;
@@ -162,6 +178,7 @@ public class Main {
     }
 
     private static ArrayList<String> generateHeuristicCSVFile() {
+        List<City> solution;
         ArrayList<String> lines = new ArrayList<>();
         lines.add("Size, Serie, Average Revenue, Average Execution Time");
         for (int size : SIZES) {
@@ -172,10 +189,12 @@ public class Main {
                 for (int example = 1; example <= EXAMPLES; example++) {
                     long startTime = System.nanoTime();
                     String filename = "./exemplaires/WC-" + size + "-" + serie + "-" + String.format("%02d", example) + ".txt";
-                    averageRevenue += Greedy.getTotalRevenue(getHeuristic(filename));
+                    System.out.print(filename);
+                    solution = getHeuristic(filename);
                     long endTime = System.nanoTime();
                     long timeElapsed = endTime - startTime;
                     averageExecutionTime += timeElapsed;
+                    averageRevenue += Greedy.getTotalRevenue(solution);
                 }
                 averageRevenue /= EXAMPLES;
                 averageExecutionTime /= EXAMPLES;

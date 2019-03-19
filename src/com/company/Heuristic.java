@@ -25,7 +25,7 @@ public class Heuristic {
         return cities;
     }
 
-    public List<City> findNeighbors(List<City> cities, List<City> solution) {
+    public List<City> findNeighbors(List<City> cities, List<City> solution, int index) {
         List<City> neighbors = new ArrayList<City>();
         int totalQuantityTmp = 0;
         for (City city : solution) {
@@ -33,8 +33,8 @@ public class Heuristic {
         }
         for (City city : cities) {
             if (!solution.contains(city)) {
-                if (totalQuantityTmp + city.quantity - solution.get(0).quantity <= totalQuantity) {
-                    if (city.revenue > solution.get(0).revenue) {
+                if (totalQuantityTmp + city.quantity - solution.get(index).quantity <= totalQuantity) {
+                    if (city.revenue > solution.get(index).revenue) {
                         neighbors.add(city);
                     }
                 }
