@@ -13,62 +13,75 @@ public class ProgDynam {
 
     private int totalCities;
     private int totalQuantity;
-    List<City> cities = new ArrayList<>();
     private int[][] D;
 
-    void readTextFile(String fileName) throws IOException {
+    public List<City> readTextFile(String fileName) throws IOException {
         Path path = Paths.get(fileName);
         List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
         totalCities = Integer.parseInt(allLines.remove(0));
         totalQuantity = Integer.parseInt(allLines.remove(allLines.size() - 1));
-        D = new int[(totalCities + 1)][(totalQuantity + 1)];
-        for (int i = 0; i < totalCities + 1; i++) {
+        try {
+            D = new int[totalCities][totalQuantity + 1];
+        } catch (OutOfMemoryError e) {
+            System.out.print(e);
+            return null;
+        }
+        List<City> cities = new ArrayList<>();
+        for (String line : allLines) {
+            String[] parameters = line.split("\\s+");
+            cities.add(new City(Integer.parseInt(parameters[parameters.length - 3]), Integer.parseInt(parameters[parameters.length - 2]), Integer.parseInt(parameters[parameters.length - 1])));
+        }
+        return cities;
+    }
+
+    public List<City> calculate(List<City> cities) {
+        buildArray(cities);
+        return getSolution(cities);
+    }
+
+    private void buildArray(List<City> cities) {
+        for (int i = 0; i < totalCities; i++) {
             for (int j = 0; j < totalQuantity + 1; j++) {
-                if (i == 0 || j == 0) {
-                    D[i][j] = 0;
+                D[i][j] = 0;
+                if (i == 0) {
+                    if (cities.get(i).quantity <= j) {
+                        D[i][j] = cities.get(i).revenue;
+                    }
+                } else if (cities.get(i).quantity <= j) {
+                    if (D[i - 1][j] > cities.get(i).revenue + D[i - 1][j - cities.get(i).quantity]) {
+                        D[i][j] = D[i - 1][j];
+                    } else {
+                        D[i][j] = (cities.get(i).revenue + D[i - 1][j - cities.get(i).quantity]);
+                    }
                 } else {
-                    D[i][j] = -1;
+                    D[i][j] = D[i - 1][j];
                 }
             }
         }
-
-        // City 0 is an empty city
-        cities.add(new City(0,0,0));
-
-        for (String line : allLines) {
-            String[] parameters = line.split("\\s+");
-            cities.add(new City(Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2]), Integer.parseInt(parameters[3])));
-        }
     }
 
-    int calculate() {
-        // Initialize array with limit values
-//        initializeArray();
-        // The Solution we want is found at D[totalCities,totalQuantity]
-        return getValueAt(totalCities, totalQuantity);
-    }
-
-    private void initializeArray() {
-        int totalRevenue = 0;
-        int totalQuantity = 0;
-        for (City city : cities) {
-            int i = city.index;
-            totalRevenue += city.revenue;
-            totalQuantity += city.quantity;
-            for (int j = totalQuantity; j < this.totalQuantity; j++) {
-                D[i][j] = totalRevenue;
+    private List<City> getSolution(List<City> cities) {
+        List<City> solution = new ArrayList<City>();
+        int currentQuantity = 0;
+        int index = totalQuantity;
+        for (int i = totalCities - 1; i >= 0; i--) {
+            if (i == 0) {
+                if (cities.get(i).quantity + currentQuantity <= totalQuantity) {
+                    solution.add(cities.get(i));
+                    currentQuantity += cities.get(i).quantity;
+                    index -= cities.get(i).revenue;
+                }
+            } else if (D[i][index] != D[i - 1][index]) {
+                if (cities.get(i).quantity + currentQuantity <= totalQuantity) {
+                    solution.add(cities.get(i));
+                    currentQuantity += cities.get(i).quantity;
+                    index -= cities.get(i).quantity;
+                }
+            }
+            if (currentQuantity == totalQuantity) {
+                break;
             }
         }
-    }
-
-    private int getValueAt(int i, int j) {
-        if (i <= 0 || j <= 0 || i > totalCities || j > totalQuantity) {
-            return 0;
-        }
-        if (D[i][j] != -1) {
-            return D[i][j];
-        }
-        D[i][j] = Math.max(cities.get(i).revenue + getValueAt(i - 1, j - cities.get(i).quantity), getValueAt(i - 1, j));
-        return D[i][j];
+        return solution;
     }
 }

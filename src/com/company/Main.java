@@ -15,7 +15,7 @@ public class Main {
     static int EXAMPLES = 10;
 
 
-//    static String filename = "./exemplaires/WC-100-100-03.txt";
+    //static String filename = "./exemplaires/WC-10000-10-04.txt";
 
     public static void main(String[] args) {
         /*String algorithm = args[0];
@@ -24,7 +24,8 @@ public class Main {
         boolean showExecutionTime = Boolean.parseBoolean(args[3]);
         launchAlgorithm(algorithm, filename, showSolution, showExecutionTime);*/
         //generateCSVFile(ALGO.GREEDY);
-        generateCSVFile(ALGO.HEURISTIC);
+        //generateCSVFile(ALGO.HEURISTIC);
+        generateCSVFile(ALGO.PROG_DYNA);
     }
 
     private static void launchAlgorithm(String algorithme, String filename, boolean showSolution, boolean showExecutionTime) {
@@ -75,15 +76,19 @@ public class Main {
         return allSolutions.get(maxIndex);
     }
 
-    private static int getProgDynam(String filename) {
+    private static List<City> getProgDynam(String filename) {
         ProgDynam progDynam = new ProgDynam();
+        List<City> cities = new ArrayList<>();
         try {
-            progDynam.readTextFile(filename);
+            cities = progDynam.readTextFile(filename);
         } catch (IOException e) {
             e.printStackTrace();
-            return 0;
+            return cities;
         }
-        return progDynam.calculate();
+        if (cities == null) {
+            return null;
+        }
+        return progDynam.calculate(cities);
     }
 
     private static List<City> getHeuristic(String filename) {
@@ -136,6 +141,8 @@ public class Main {
                 resultsFilename = "results-heuristic.csv";
                 break;
             case PROG_DYNA:
+                lines = generateDynamProgCSVFile();
+                resultsFilename = "results-dynam-prog.csv";
                 break;
         }
 
@@ -161,6 +168,38 @@ public class Main {
                     long startTime = System.nanoTime();
                     String filename = "./exemplaires/WC-" + size + "-" + serie + "-" + String.format("%02d", example) + ".txt";
                     solution = getGreedy(filename);
+                    long endTime = System.nanoTime();
+                    long timeElapsed = endTime - startTime;
+                    averageExecutionTime += timeElapsed;
+                    averageRevenue += Greedy.getTotalRevenue(solution);
+                }
+                averageRevenue /= EXAMPLES;
+                averageExecutionTime /= EXAMPLES;
+                // convert to milliseconds
+                averageExecutionTime /= 1000000.0;
+                lines.add(size + "," + serie + "," + averageRevenue + "," + averageExecutionTime);
+            }
+        }
+
+        return lines;
+    }
+
+    private static ArrayList<String> generateDynamProgCSVFile() {
+        List<City> solution;
+        ArrayList<String> lines = new ArrayList<>();
+        lines.add("Size, Serie, Average Revenue, Average Execution Time");
+        for (int size : SIZES) {
+            for (int serie : SERIES) {
+                // Get average of examples 1 through 10
+                float averageRevenue = 0;
+                double averageExecutionTime = 0;
+                for (int example = 1; example <= EXAMPLES; example++) {
+                    long startTime = System.nanoTime();
+                    String filename = "./exemplaires/WC-" + size + "-" + serie + "-" + String.format("%02d", example) + ".txt";
+                    solution = getProgDynam(filename);
+                    if (solution == null) {
+                        break;
+                    }
                     long endTime = System.nanoTime();
                     long timeElapsed = endTime - startTime;
                     averageExecutionTime += timeElapsed;
